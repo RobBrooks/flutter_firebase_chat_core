@@ -95,6 +95,18 @@ class FirebaseChatCore {
     );
   }
 
+  Future<void> joinGroupRoom(types.User u, String roomId) async {
+    String uid = u.id;
+    final room = await getFirebaseFirestore()
+        .collection(config.roomsCollectionName)
+        .doc(roomId)
+        .update({
+      'updatedAt': FieldValue.serverTimestamp(),
+      'userIds': FieldValue.arrayUnion([u.id]),
+      'userRoles.${uid}': u.role?.toShortString(),
+    });
+  }
+
   /// Creates a direct chat for 2 people. Add [metadata] for any additional
   /// custom data.
   Future<types.Room> createRoom(
